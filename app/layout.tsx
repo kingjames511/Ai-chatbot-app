@@ -9,8 +9,31 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "AI Chat Bot – Instant Conversations",
+  description: "Chat instantly with our AI-powered bot. Fast, secure, and always available.",
+  keywords: ["AI", "chatbot", "instant messaging", "conversational AI"],
+  openGraph: {
+    title: "AI Chat Bot",
+    description: "Experience seamless conversations with our AI chat bot.",
+    url: defaultUrl,
+    siteName: "AI Chat Bot",
+    images: [
+      {
+        url: `${defaultUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "AI Chat Bot",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Chat Bot",
+    description: "Chat instantly with our AI-powered bot.",
+    images: [`${defaultUrl}/og-image.png`],
+  },
 };
 
 const geistSans = Geist({
