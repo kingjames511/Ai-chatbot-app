@@ -1,105 +1,292 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# AI Chatbot App 🤖
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A full-stack AI chatbot application built with React, Supabase, and OpenAI API. Features secure authentication, persistent chat history, multiple conversation modes, and real-time AI responses.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+![AI Chatbot Demo](./assets/demo-screenshot.png)
 
-## Features
+## ✨ Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- 🔐 **Secure Authentication** - Email/password and magic link login via Supabase Auth
+- 💬 **Real-time Chat Interface** - Interactive chat UI with typing indicators
+- 🧠 **OpenAI Integration** - Powered by GPT models via secure backend endpoints
+- 📚 **Chat History** - Persistent conversation storage across sessions
+- 🎭 **Multiple Chat Modes** - Tutor, Career Coach, Code Helper, and more
+- 🌙 **Dark/Light Theme** - Toggle between themes for better UX
+- 📱 **Responsive Design** - Mobile-friendly interface
+- ⚡ **Streaming Responses** - Real-time typing effect for AI responses
+- 🔒 **Secure API Calls** - OpenAI API key protected via Supabase Edge Functions
 
-## Demo
+## 🛠️ Tech Stack
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- **Frontend**: React/Next.js, Tailwind CSS
+- **Backend**: Supabase (Database, Auth, Edge Functions)
+- **AI**: OpenAI GPT API
+- **Deployment**: Vercel (Frontend), Supabase (Backend)
+- **Database**: PostgreSQL (via Supabase)
 
-## Deploy to Vercel
+## 🏗️ Architecture
 
-Vercel deployment will guide you through creating a Supabase account and project.
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   React App     │───▶│  Supabase        │───▶│   OpenAI API    │
+│   (Frontend)    │    │  Edge Functions  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌──────────────────┐
+                       │   Supabase DB    │
+                       │   (PostgreSQL)   │
+                       └──────────────────┘
+```
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 📊 Database Schema
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+```sql
+-- Users table
+CREATE TABLE users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+-- Chats table
+CREATE TABLE chats (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT,
+  mode TEXT DEFAULT 'general',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+-- Messages table
+CREATE TABLE messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  chat_id UUID REFERENCES chats(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-## Clone and run locally
+## 🚀 Quick Start
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### Prerequisites
 
-2. Create a Next.js app using the Supabase Starter template npx command
+- Node.js 18+ and npm
+- Supabase account
+- OpenAI API account
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+### 1. Clone the Repository
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+```bash
+git clone https://github.com/yourusername/ai-chatbot-app.git
+cd ai-chatbot-app
+npm install
+```
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+### 2. Environment Setup
 
-3. Use `cd` to change into the app's directory
+Create a `.env.local` file in the root directory:
 
-   ```bash
-   cd with-supabase-app
-   ```
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-4. Rename `.env.example` to `.env.local` and update the following:
+### 3. Supabase Configuration
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+1. Create a new Supabase project
+2. Run the database schema (see schema above)
+3. Enable Row Level Security (RLS) policies:
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+```sql
+-- Enable RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
-5. You can now run the Next.js local development server:
+-- RLS Policies
+CREATE POLICY "Users can view own data" ON users FOR ALL USING (auth.uid() = id);
+CREATE POLICY "Users can manage own chats" ON chats FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can manage own messages" ON messages FOR ALL USING (
+  EXISTS (SELECT 1 FROM chats WHERE chats.id = messages.chat_id AND chats.user_id = auth.uid())
+);
+```
 
-   ```bash
-   npm run dev
-   ```
+### 4. Deploy Supabase Edge Function
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+```bash
+# Install Supabase CLI
+npm install -g supabase
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+# Login to Supabase
+supabase login
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+# Link to your project
+supabase link --project-ref your-project-ref
 
-## Feedback and issues
+# Deploy the chat function
+supabase functions deploy chat
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+# Set your OpenAI API key
+supabase secrets set OPENAI_API_KEY=your_openai_api_key
+```
 
-## More Supabase examples
+### 5. Run Development Server
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` to see your chatbot in action!
+
+## 📁 Project Structure
+
+```
+ai-chatbot-app/
+├── components/
+│   ├── Chat/
+│   │   ├── ChatWindow.jsx
+│   │   ├── MessageList.jsx
+│   │   ├── MessageInput.jsx
+│   │   └── TypingIndicator.jsx
+│   ├── Auth/
+│   │   ├── LoginForm.jsx
+│   │   └── SignupForm.jsx
+│   └── Layout/
+│       ├── Header.jsx
+│       └── Sidebar.jsx
+├── pages/
+│   ├── index.js
+│   ├── chat/[id].js
+│   └── auth/
+├── lib/
+│   ├── supabase.js
+│   └── utils.js
+├── supabase/
+│   └── functions/
+│       └── chat/
+│           └── index.ts
+└── styles/
+    └── globals.css
+```
+
+## 🔧 Supabase Edge Function
+
+The chat functionality is powered by a secure Supabase Edge Function:
+
+```typescript
+// supabase/functions/chat/index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
+const supabaseUrl = Deno.env.get('SUPABASE_URL')
+const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
+
+serve(async (req) => {
+  try {
+    const { message, chat_id } = await req.json()
+    
+    // Call OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: message }],
+      }),
+    })
+    
+    const data = await response.json()
+    const aiResponse = data.choices[0].message.content
+    
+    return new Response(JSON.stringify({ response: aiResponse }), {
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+})
+```
+
+## 🎨 Available Chat Modes
+
+- **General** - Open-ended conversations
+- **Tutor** - Educational assistance and explanations
+- **Career Coach** - Professional development guidance
+- **Code Helper** - Programming assistance and debugging
+- **Creative Writer** - Story writing and creative content
+
+## 🚀 Deployment
+
+### Frontend (Vercel)
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
+
+### Backend (Supabase)
+
+The backend is automatically deployed with Supabase Edge Functions.
+
+## 📝 Development Timeline
+
+This project was built following a structured 6-week development plan:
+
+- **Week 1**: Project setup and authentication
+- **Week 2**: Database design and integration
+- **Week 3**: OpenAI API integration via Edge Functions
+- **Week 4**: Chat UI development
+- **Week 5**: Enhanced features (themes, multiple chats, modes)
+- **Week 6**: Deployment and documentation
+
+## 🔮 Future Enhancements
+
+- [ ] Voice input/output capabilities
+- [ ] File upload and processing
+- [ ] Chat export functionality
+- [ ] Usage analytics and insights
+- [ ] Mobile app version
+- [ ] Multi-language support
+- [ ] Custom AI model fine-tuning
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [OpenAI](https://openai.com/) for the GPT API
+- [Supabase](https://supabase.com/) for the backend infrastructure
+- [Vercel](https://vercel.com/) for deployment
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+
+## 📞 Contact
+
+king james(omekejames1@gmail.com)
+
+Project Link: [https://github.com/kingjames511/ai-chatbot-app](https://github.com/yourusername/ai-chatbot-app)
+
+Live Demo: [https://your-chatbot-app.vercel.app](https://your-chatbot-app.vercel.app)
+
+---
+
+⭐ **Built with React, Supabase, and OpenAI API** ⭐
